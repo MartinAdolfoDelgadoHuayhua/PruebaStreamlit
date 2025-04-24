@@ -5,10 +5,10 @@ from io import BytesIO
  
 st.set_page_config(page_title="Asignación de Marcas", layout="centered")
  
-st.title("Asignador de Marcas por Grupo de Agencia")
+st.title("Asignacion de Prueba a Realizar - A/B Test Mibanco")
 st.markdown("Sube tu archivo y se asignarán aleatoriamente las marcas **Adam Milo** y **Manpower** por grupo de agencia.")
-st.markdown("Tener en cuenta que despues del procesamiento unicamente tendremos las posicions de Asesor de Negocios I, II y III")
-st.markdown("Una vez generado el archivo compartirlo con el equipo de People Analytics - Credicorp. Gracias :)")
+st.markdown("Tener en cuenta que despues del procesamiento unicamente tendremos las posiciones de **Asesor de Negocios I, II y III**")
+st.markdown("Una vez generado el archivo compartirlo con el equipo de **People Analytics - Credicorp**. Gracias :)")
  
 # Subida del archivo base
 grupos_file = st.file_uploader("1. Sube el archivo base que contiene el grupo de agencia", type=["xlsx"])
