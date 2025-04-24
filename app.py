@@ -24,8 +24,14 @@ if grupos_file and datos_file:
         grupos_df = grupos_df[['NUMERO CENTRO COSTO','cluster']]
 
         # Se hace el filtrado de los puestos tomados en cuenta para el experimento
-        user_df = user_df[user_df['PUESTO REQUERIDO'].isin(['ASESOR DE NEGOCIOS 2', 'ASESOR DE NEGOCIOS 1','ASESOR DE NEGOCIOS 3','ASESOR DE NEGOCIOS  3  ','ASESOR DE NEGOCIOS  1  ', 'ASESOR DE NEGOCIOS  2  ']).reset_index(drop=True)
-
+        user_df = user_df[user_df['PUESTO REQUERIDO'].isin([
+                      'ASESOR DE NEGOCIOS 2',
+                      'ASESOR DE NEGOCIOS 1',
+                      'ASESOR DE NEGOCIOS 3',
+                      'ASESOR DE NEGOCIOS  3  ',
+                      'ASESOR DE NEGOCIOS  1  ',
+                      'ASESOR DE NEGOCIOS  2  '
+                  ])].reset_index(drop=True)
         # Validar columnas mínimas
         if 'NUMERO CENTRO COSTO' not in grupos_df.columns or 'NUMERO CENTRO COSTO' not in user_df.columns:
             st.error("El archivo de requerimiento no tiene la columna 'NUMERO CENTRO COSTO'.")
