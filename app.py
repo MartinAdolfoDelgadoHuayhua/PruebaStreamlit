@@ -20,8 +20,10 @@ if grupos_file and datos_file:
     try:
         grupos_df = pd.read_excel(grupos_file)
         user_df = pd.read_excel(datos_file)
-        user_df = user_df[['NOMBRE CENTRO COSTO','CODIGO RQ']]
+        user_df = user_df[['NOMBRE CENTRO COSTO','CODIGO RQ','PUESTO REQUERIDO']]
         grupos_df = grupos_df[['NOMBRE CENTRO COSTO','cluster']]
+
+        user_df = user_df[user_df['PUESTO REQUERIDO'].isin([])
  
         # Validar columnas mínimas
         if 'NOMBRE CENTRO COSTO' not in grupos_df.columns or 'NOMBRE CENTRO COSTO' not in user_df.columns:
