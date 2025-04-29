@@ -11,12 +11,12 @@ st.markdown("Tener en cuenta que despues del procesamiento unicamente tendremos 
 st.markdown("Una vez generado el archivo compartirlo con el equipo de **People Analytics - Credicorp**")
 
 # Archivos a subir
-grupos_file = st.file_uploader("1. Sube el archivo base que contiene el grupo de agencia", type=["xlsx"])
+grupos_file = st.file_uploader("1. Sube el archivo base que contiene el grupo de agencias **(Compartido por PA Credicorp)** ", type=["xlsx"])
 datos_file = st.file_uploader("2. Sube el archivo de requerimientos", type=["xlsx"])
-historico_file = st.file_uploader("3. (Opcional) Sube el archivo histórico de asignaciones anteriores", type=["xlsx"])
+historico_file = st.file_uploader("3. (Opcional) Sube el archivo histórico de asignaciones anteriores del mes", type=["xlsx"])
 
 # Opcional: pesos manuales
-usar_pesos = st.checkbox("¿Deseas usar pesos personalizados en lugar del histórico?")
+usar_pesos = st.checkbox("¿Deseas usar pesos personalizados?")
 if usar_pesos:
     porcentaje_adam = st.slider("Porcentaje de asignación para Adam Milo", min_value=0, max_value=100, value=50)
     st.write(f"Se asignará {porcentaje_adam}% a Adam Milo y {100 - porcentaje_adam}% a Manpower")
