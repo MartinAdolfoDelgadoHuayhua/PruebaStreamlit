@@ -54,7 +54,8 @@ if grupos_file and datos_file:
             if historico_file:
                 historico_df = pd.read_excel(historico_file)
                 if all(col in historico_df.columns for col in ["FUERZA COMERCIAL", "PUESTO REQUERIDO", "cluster", "Prueba"]):
-                    historico_df['PUESTO REQUERIDO'] = historico_df['PUESTO REQUERIDO'].str.strip().str.upper()
+                    reemplazos = {'ASESOR DE NEGOCIOS  1  ': 'ASESOR DE NEGOCIOS 1','ASESOR DE NEGOCIOS  2  ': 'ASESOR DE NEGOCIOS 2','ASESOR DE NEGOCIOS  3  ': 'ASESOR DE NEGOCIOS 3'}
+                    historico_df['PUESTO REQUERIDO'] = historico_df['PUESTO REQUERIDO'].replace(reemplazos)
                     historico_counts = historico_df.groupby(
                         ["FUERZA COMERCIAL", "PUESTO REQUERIDO", "cluster", "Prueba"]
                     ).size().unstack(fill_value=0).to_dict(orient="index")
