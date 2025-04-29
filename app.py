@@ -68,46 +68,47 @@ if grupos_file and datos_file:
 
             # Función de asignación
             def asignar_marcas(grupo):
-    random.seed(2025)
-    n = len(grupo)
-
-    if usar_pesos:
-        # Asignación usando pesos definidos manualmente
-        cantidad_adam = round(n * porcentaje_adam / 100)
-        cantidad_manpower = n - cantidad_adam
-        marcas = ["Adam Milo"] * cantidad_adam + ["Manpower"] * cantidad_manpower
-        random.shuffle(marcas)
-        grupo["Prueba"] = marcas
-
-    elif usar_historico:
-        # Conteos locales, sin usar nonlocal
-        marcas = []
-        count_adam = total_adam
-        count_manpower = total_manpower
-        for _ in range(len(grupo)):
-            if count_adam < count_manpower:
-                marcas.append("Adam Milo")
-                count_adam += 1
-            elif count_manpower < count_adam:
-                marcas.append("Manpower")
-                count_manpower += 1
-            else:
-                marca = random.choice(["Adam Milo", "Manpower"])
-                marcas.append(marca)
-                if marca == "Adam Milo":
-                    count_adam += 1
+                
+                random.seed(2025)
+                n = len(grupo)
+            
+                if usar_pesos:
+                    # Asignación usando pesos definidos manualmente
+                    cantidad_adam = round(n * porcentaje_adam / 100)
+                    cantidad_manpower = n - cantidad_adam
+                    marcas = ["Adam Milo"] * cantidad_adam + ["Manpower"] * cantidad_manpower
+                    random.shuffle(marcas)
+                    grupo["Prueba"] = marcas
+            
+                elif usar_historico:
+                    # Conteos locales, sin usar nonlocal
+                    marcas = []
+                    count_adam = total_adam
+                    count_manpower = total_manpower
+                    for _ in range(len(grupo)):
+                        if count_adam < count_manpower:
+                            marcas.append("Adam Milo")
+                            count_adam += 1
+                        elif count_manpower < count_adam:
+                            marcas.append("Manpower")
+                            count_manpower += 1
+                        else:
+                            marca = random.choice(["Adam Milo", "Manpower"])
+                            marcas.append(marca)
+                            if marca == "Adam Milo":
+                                count_adam += 1
+                            else:
+                                count_manpower += 1
+                    grupo["Prueba"] = marcas
+            
                 else:
-                    count_manpower += 1
-        grupo["Prueba"] = marcas
-
-    else:
-        # Asignación simple 50/50
-        mitad = n // 2
-        marcas = ["Manpower"] * mitad + ["Adam Milo"] * (n - mitad)
-        random.shuffle(marcas)
-        grupo["Prueba"] = marcas
-
-    return grupo
+                    # Asignación simple 50/50
+                    mitad = n // 2
+                    marcas = ["Manpower"] * mitad + ["Adam Milo"] * (n - mitad)
+                    random.shuffle(marcas)
+                    grupo["Prueba"] = marcas
+            
+                return grupo
 
             resultado_df = df.groupby("cluster", group_keys=False).apply(asignar_marcas)
 
