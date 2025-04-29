@@ -5,11 +5,10 @@ from io import BytesIO
 
 st.set_page_config(page_title="Asignación de Marcas", layout="centered")
 
-st.title("Asignacion de Prueba a Realizar - A/B Test Mibanco")
-st.markdown("Sube tu archivo y se asignarán aleatoriamente las marcas **Adam Milo** y **Manpower** por grupo de agencia.")
-st.markdown("Tener en cuenta que después del procesamiento unicamente tendremos las posiciones de **Asesor de Negocios I, II y III**.")
+st.title("Asignación de Prueba a Realizar - A/B Test Mibanco")
+st.markdown("Sube tus archivos y se asignarán aleatoriamente las marcas **Adam Milo** y **Manpower** por grupo de agencia, fuerza comercial y puesto requerido.")
+st.markdown("**Nota:** Después del procesamiento solo se incluirán las posiciones **Asesor de Negocios I, II y III**.")
 st.markdown("Una vez generado el archivo, compartirlo con el equipo de **People Analytics - Credicorp**.")
-st.markdown("Si no es el primer requerimento del mes - colocar en un excel los requerimentos previos con las marcas asignadas para que se tome como un historico en la asignacion")
 
 # Subida del archivo base
 grupos_file = st.file_uploader("1. Sube el archivo base que contiene el grupo de agencia", type=["xlsx"])
@@ -17,72 +16,71 @@ grupos_file = st.file_uploader("1. Sube el archivo base que contiene el grupo de
 # Subida del archivo de requerimientos
 datos_file = st.file_uploader("2. Sube el archivo de requerimientos", type=["xlsx"])
 
-# Subida del archivo histórico (opcional)
-historico_file = st.file_uploader("3. (Opcional) Sube el archivo histórico de asignaciones anteriores del mes", type=["xlsx"])
+# Subida del histórico (opcional)
+historico_file = st.file_uploader("3. (Opcional) Sube el archivo histórico de asignaciones anteriores", type=["xlsx"])
 
-# Activar pesos manuales (opcional)
-usar_pesos = st.checkbox("¿Deseas definir manualmente los porcentajes de asignación? (Opcional)")
+usar_pesos = st.checkbox("¿Deseas asignar usando porcentajes personalizados?", value=False)
 
 if usar_pesos:
-    porcentaje_adam = st.slider("Porcentaje de Adam Milo", min_value=0, max_value=100, value=50)
+    porcentaje_adam = st.slider("Porcentaje para Adam Milo", min_value=0, max_value=100, value=50)
     porcentaje_manpower = 100 - porcentaje_adam
-    st.write(f"Porcentaje de Manpower: {porcentaje_manpower}%")
+    st.write(f"Adam Milo: {porcentaje_adam}% | Manpower: {porcentaje_manpower}%")
 
 if grupos_file and datos_file:
     try:
         grupos_df = pd.read_excel(grupos_file)
         user_df = pd.read_excel(datos_file)
-        user_df = user_df[['NUMERO CENTRO COSTO', 'CODIGO RQ', 'PUESTO REQUERIDO']]
+
+        # Validar columnas necesarias
+        user_df = user_df[['NUMERO CENTRO COSTO', 'CODIGO RQ', 'PUESTO REQUERIDO', 'FUERZA COMERCIAL']]
         grupos_df = grupos_df[['NUMERO CENTRO COSTO', 'cluster']]
 
-        # Filtrar puestos válidos para el experimento
-        user_df = user_df[user_df['PUESTO REQUERIDO'].isin([
+        # Filtro de puestos válidos
+        puestos_validos = [
             'ASESOR DE NEGOCIOS 2',
             'ASESOR DE NEGOCIOS 1',
             'ASESOR DE NEGOCIOS 3',
             'ASESOR DE NEGOCIOS  3  ',
             'ASESOR DE NEGOCIOS  1  ',
             'ASESOR DE NEGOCIOS  2  '
-        ])].reset_index(drop=True)
+        ]
+        user_df = user_df[user_df['PUESTO REQUERIDO'].isin(puestos_validos)].reset_index(drop=True)
 
-        # Validar columnas mínimas
         if 'NUMERO CENTRO COSTO' not in grupos_df.columns or 'NUMERO CENTRO COSTO' not in user_df.columns:
-            st.error("El archivo de requerimiento no tiene la columna 'NUMERO CENTRO COSTO'.")
+            st.error("El archivo no contiene la columna 'NUMERO CENTRO COSTO'.")
         else:
-            # Merge de bases
+            # Merge
             df = pd.merge(user_df, grupos_df, on="NUMERO CENTRO COSTO", how="left")
 
-            # Inicializar conteos históricos
+            # Procesar histórico si se subió
+            usar_historico = False
             total_adam = 0
             total_manpower = 0
-            usar_historico = False
 
             if historico_file:
                 historico_df = pd.read_excel(historico_file)
-                if 'Prueba' in historico_df.columns:
-                    total_adam = historico_df[historico_df['Prueba'] == 'Adam Milo'].shape[0]
-                    total_manpower = historico_df[historico_df['Prueba'] == 'Manpower'].shape[0]
+                if "Prueba" in historico_df.columns:
+                    total_adam = (historico_df["Prueba"] == "Adam Milo").sum()
+                    total_manpower = (historico_df["Prueba"] == "Manpower").sum()
                     usar_historico = True
-                    st.info(f"Histórico cargado: {total_adam} Adam Milo vs {total_manpower} Manpower asignados anteriormente.")
                 else:
-                    st.warning("El archivo histórico no tiene columna 'Prueba'. Se ignorará el histórico.")
+                    st.warning("El histórico no contiene la columna 'Prueba'. No se usará para balancear.")
 
             # Función de asignación
             def asignar_marcas(grupo):
-                
                 random.seed(2025)
                 n = len(grupo)
-            
+
                 if usar_pesos:
-                    # Asignación usando pesos definidos manualmente
+                    # Asignación usando porcentajes definidos
                     cantidad_adam = round(n * porcentaje_adam / 100)
                     cantidad_manpower = n - cantidad_adam
                     marcas = ["Adam Milo"] * cantidad_adam + ["Manpower"] * cantidad_manpower
                     random.shuffle(marcas)
                     grupo["Prueba"] = marcas
-            
+
                 elif usar_historico:
-                    # Conteos locales, sin usar nonlocal
+                    # Asignación basada en histórico
                     marcas = []
                     count_adam = total_adam
                     count_manpower = total_manpower
@@ -101,23 +99,24 @@ if grupos_file and datos_file:
                             else:
                                 count_manpower += 1
                     grupo["Prueba"] = marcas
-            
+
                 else:
                     # Asignación simple 50/50
                     mitad = n // 2
-                    marcas = ["Manpower"] * mitad + ["Adam Milo"] * (n - mitad)
+                    marcas = ["Adam Milo"] * mitad + ["Manpower"] * (n - mitad)
                     random.shuffle(marcas)
                     grupo["Prueba"] = marcas
-            
+
                 return grupo
 
-            resultado_df = df.groupby("cluster", group_keys=False).apply(asignar_marcas)
+            # Agrupar por fuerza comercial, puesto requerido y cluster
+            resultado_df = df.groupby(["FUERZA COMERCIAL", "PUESTO REQUERIDO", "cluster"], group_keys=False).apply(asignar_marcas)
 
             st.success("¡Asignación completada!")
 
             st.dataframe(resultado_df)
 
-            # Preparar para descarga
+            # Exportar
             output = BytesIO()
             resultado_df.to_excel(output, index=False)
             st.download_button(
