@@ -19,6 +19,14 @@ datos_file = st.file_uploader("2. Sube el archivo de requerimientos", type=["xls
 # Subida del archivo histórico (opcional)
 historico_file = st.file_uploader("3. (Opcional) Sube el archivo histórico de asignaciones anteriores", type=["xlsx"])
 
+# Activar pesos manuales (opcional)
+usar_pesos = st.checkbox("¿Deseas definir manualmente los porcentajes de asignación? (Opcional)")
+
+if usar_pesos:
+    porcentaje_adam = st.slider("Porcentaje de Adam Milo", min_value=0, max_value=100, value=50)
+    porcentaje_manpower = 100 - porcentaje_adam
+    st.write(f"Porcentaje de Manpower: {porcentaje_manpower}%")
+
 if grupos_file and datos_file:
     try:
         grupos_df = pd.read_excel(grupos_file)
@@ -60,7 +68,18 @@ if grupos_file and datos_file:
 
             # Función de asignación
             def asignar_marcas(grupo):
-                if usar_historico:
+                random.seed(2025)
+                n = len(grupo)
+
+                if usar_pesos:
+                    # Asignación usando pesos definidos manualmente
+                    cantidad_adam = round(n * porcentaje_adam / 100)
+                    cantidad_manpower = n - cantidad_adam
+                    marcas = ["Adam Milo"] * cantidad_adam + ["Manpower"] * cantidad_manpower
+                    random.shuffle(marcas)
+                    grupo["Prueba"] = marcas
+
+                elif usar_historico:
                     nonlocal total_adam, total_manpower
                     marcas = []
                     for _ in range(len(grupo)):
@@ -78,14 +97,14 @@ if grupos_file and datos_file:
                             else:
                                 total_manpower += 1
                     grupo["Prueba"] = marcas
+
                 else:
-                    # Si no hay histórico, simple 50/50 en cada cluster
-                    n = len(grupo)
+                    # Asignación simple 50/50
                     mitad = n // 2
                     marcas = ["Adam Milo"] * mitad + ["Manpower"] * (n - mitad)
-                    random.seed(2025)
                     random.shuffle(marcas)
                     grupo["Prueba"] = marcas
+
                 return grupo
 
             resultado_df = df.groupby("cluster", group_keys=False).apply(asignar_marcas)
