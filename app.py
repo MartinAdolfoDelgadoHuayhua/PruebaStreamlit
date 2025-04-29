@@ -29,8 +29,9 @@ if grupos_file and datos_file:
         user_df = user_df[['NUMERO CENTRO COSTO', 'CODIGO RQ', 'PUESTO REQUERIDO', 'FUERZA COMERCIAL']]
         grupos_df = grupos_df[['NUMERO CENTRO COSTO', 'cluster']]
 
-        # Normalizar los textos
-        user_df['PUESTO REQUERIDO'] = user_df['PUESTO REQUERIDO'].str.strip().str.upper()
+        # Normalización de valores con espacios extra
+        reemplazos = {'ASESOR DE NEGOCIOS  1  ': 'ASESOR DE NEGOCIOS 1','ASESOR DE NEGOCIOS  2  ': 'ASESOR DE NEGOCIOS 2','ASESOR DE NEGOCIOS  3  ': 'ASESOR DE NEGOCIOS 3'}
+        user_df['PUESTO REQUERIDO'] = user_df['PUESTO REQUERIDO'].replace(reemplazos)
 
         # Filtrar solo puestos válidos
         puestos_validos = [
