@@ -9,6 +9,7 @@ st.title("Asignacion de Prueba a Realizar - A/B Test Mibanco")
 st.markdown("Sube tu archivo y se asignarán aleatoriamente las marcas **Adam Milo** y **Manpower** por grupo de agencia.")
 st.markdown("Tener en cuenta que después del procesamiento unicamente tendremos las posiciones de **Asesor de Negocios I, II y III**.")
 st.markdown("Una vez generado el archivo, compartirlo con el equipo de **People Analytics - Credicorp**.")
+st.markdown("Si no es el primer requerimento del mes - colocar en un excel los requerimentos previos con las marcas asignadas para que se tome como un historico en la asignacion")
 
 # Subida del archivo base
 grupos_file = st.file_uploader("1. Sube el archivo base que contiene el grupo de agencia", type=["xlsx"])
@@ -17,7 +18,7 @@ grupos_file = st.file_uploader("1. Sube el archivo base que contiene el grupo de
 datos_file = st.file_uploader("2. Sube el archivo de requerimientos", type=["xlsx"])
 
 # Subida del archivo histórico (opcional)
-historico_file = st.file_uploader("3. (Opcional) Sube el archivo histórico de asignaciones anteriores", type=["xlsx"])
+historico_file = st.file_uploader("3. (Opcional) Sube el archivo histórico de asignaciones anteriores del mes", type=["xlsx"])
 
 # Activar pesos manuales (opcional)
 usar_pesos = st.checkbox("¿Deseas definir manualmente los porcentajes de asignación? (Opcional)")
