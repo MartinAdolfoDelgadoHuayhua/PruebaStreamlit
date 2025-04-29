@@ -45,6 +45,8 @@ if grupos_file and datos_file:
             'ASESOR DE NEGOCIOS  2  '
         ]
         user_df = user_df[user_df['PUESTO REQUERIDO'].isin(puestos_validos)].reset_index(drop=True)
+        reemplazos = {'ASESOR DE NEGOCIOS  1  ': 'ASESOR DE NEGOCIOS 1','ASESOR DE NEGOCIOS  2  ': 'ASESOR DE NEGOCIOS 2','ASESOR DE NEGOCIOS  3  ': 'ASESOR DE NEGOCIOS 3'}
+        user_df['PUESTO REQUERIDO'] = user_df['PUESTO REQUERIDO'].replace(reemplazos)
 
         if 'NUMERO CENTRO COSTO' not in grupos_df.columns or 'NUMERO CENTRO COSTO' not in user_df.columns:
             st.error("El archivo no contiene la columna 'NUMERO CENTRO COSTO'.")
