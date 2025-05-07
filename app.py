@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import random
 from io import BytesIO
+import openpyxl
 
 st.set_page_config(page_title="Asignación de Marcas", layout="centered")
 
@@ -23,8 +24,8 @@ if usar_pesos:
 
 if grupos_file and datos_file:
     try:
-        grupos_df = pd.read_excel(grupos_file,engine="openpyxl")
-        user_df = pd.read_excel(datos_file,engine="openpyxl")
+        grupos_df = pd.read_excel(grupos_file)
+        user_df = pd.read_excel(datos_file)
 
         user_df = user_df[['NUMERO CENTRO COSTO', 'CODIGO RQ', 'PUESTO REQUERIDO', 'FUERZA COMERCIAL']]
         grupos_df = grupos_df[['NUMERO CENTRO COSTO', 'cluster']]
