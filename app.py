@@ -23,8 +23,8 @@ if usar_pesos:
 
 if grupos_file and datos_file:
     try:
-        grupos_df = pd.read_excel(grupos_file,engine="openpyxl"))
-        user_df = pd.read_excel(datos_file,engine="openpyxl"))
+        grupos_df = pd.read_excel(grupos_file,engine="openpyxl")
+        user_df = pd.read_excel(datos_file,engine="openpyxl")
 
         user_df = user_df[['NUMERO CENTRO COSTO', 'CODIGO RQ', 'PUESTO REQUERIDO', 'FUERZA COMERCIAL']]
         grupos_df = grupos_df[['NUMERO CENTRO COSTO', 'cluster']]
